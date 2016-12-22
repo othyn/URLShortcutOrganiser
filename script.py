@@ -21,6 +21,9 @@ import time
 # pprint for similar behavior of PHP's var_dump, pprint.pprint(VAR), helps with debugging
 # Spread across multiple lines as per C0410
 
+START_TIME = time.time()
+# Script start time
+
 DIR_TO_SEARCH = ''
 # For storing the directory argument in
 
@@ -116,3 +119,5 @@ for current_file in glob.glob("*.url"):
 with open('url_data_'+str(TIMESTAMP)+'.json', 'w') as file_output:
     json.dump(NEW_URLS, file_output, sort_keys=True, indent=4, ensure_ascii=False)
 # Create a new JSON file in the current directory and dump the processed dict
+
+print "Completed in: %s seconds" % (time.time() - START_TIME)
