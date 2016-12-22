@@ -8,12 +8,16 @@
 # Multiple lines as per C0301 (100 char limit per line)
 
 import os
-import glob
 import argparse
-# Import OS for filesystem
-# Import glob for dealing with path names
-# Import argparse for easy management of script arguments
-# Imports spread across multiple lines as per C0410
+import glob
+import json
+#import pprint
+# OS for filesystem
+# Argparse for easy management of script arguments
+# Glob for dealing with path names
+# JSON for data manipulation/storage
+# pprint for similar behavior of PHP's var_dump, pprint.pprint(VAR), helps with debugging
+# Spread across multiple lines as per C0410
 
 PARSER = argparse.ArgumentParser(description='A directory is required to scan for *.url files.')
 # Creates a new argparse module, setting the description for the scripts arguments
@@ -24,17 +28,37 @@ PARSER.add_argument('-d', '--directory', help='Directory to search', required=Tr
 ARGS = PARSER.parse_args()
 # Get the argument values
 
+DIR_TO_SEARCH = ARGS.directory
+# Set the directory to search
+
+#pprint.pprint(DIR_TO_SEARCH)
+
 try:
-    if not os.path.isdir(ARGS.directory):
-        raise ValueError('The path specified is not a directory')
+    if not os.path.isdir(DIR_TO_SEARCH):
+        raise ValueError('Error: The path specified is not a directory')
 
 except ValueError, error:
     exit(str(error))
 # Check whether the passed argument is a directory, if it isn't throw an error
 
-DIR_TO_SEARCH = os.chdir(ARGS.directory)
+os.chdir(DIR_TO_SEARCH)
 # Set the directory to search to the users specified directory
 
-for file_temp in glob.glob("*.url"):
-    print file_temp
-# Iterate through each file that ends in url and print it (for testing)
+for current_file in glob.glob("*.url"):
+
+    #current_file = unicode(current_file, 'utf-8', errors='ignore')
+
+    if not os.path.isfile(current_file):
+        print 'ALERT: contains unicode, just fucking skip it for now'
+        continue
+    # At this moment, no easy solution for dealing with filenames containing unicode
+    # So, run a check to see if the file exists, if not, its probably unicode
+
+    with open(current_file, "r") as infile:
+        for line in infile:
+            if line.startswith('URL'):
+                print line[4:]
+                break
+# Iterate through each file that ends in url
+# Check the file exists
+# If it does, grab the url
